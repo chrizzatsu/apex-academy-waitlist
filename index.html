@@ -1267,22 +1267,54 @@
 </footer>
 
 <script>
+// ─── KIT CONFIG ───
+const KIT_FORM_ID = '9432490';
+const KIT_API_KEY = 'LZm2wW8xcKPZpAx5HgnE-w';
+
+async function subscribeToKit(email) {
+  const res = await fetch(`https://api.convertkit.com/v3/forms/${KIT_FORM_ID}/subscribe`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: KIT_API_KEY, email })
+  });
+  if (!res.ok) throw new Error('Kit API error');
+  return res.json();
+}
+
 // ─── HERO FORM ───
-function handleHeroSubmit(e) {
+async function handleHeroSubmit(e) {
   e.preventDefault();
   const email = document.getElementById('hero-email').value;
-  document.querySelector('.hero-form').style.display = 'none';
-  document.getElementById('hero-success').classList.add('show');
-  console.log('Hero waitlist email:', email);
+  const btn = e.target.querySelector('button');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    await subscribeToKit(email);
+    document.querySelector('.hero-form').style.display = 'none';
+    document.getElementById('hero-success').classList.add('show');
+  } catch (err) {
+    btn.textContent = 'Warteliste beitreten →';
+    btn.disabled = false;
+    alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+  }
 }
 
 // ─── CTA FORM ───
-function handleCtaSubmit(e) {
+async function handleCtaSubmit(e) {
   e.preventDefault();
   const email = document.getElementById('cta-email').value;
-  document.getElementById('cta-form').style.display = 'none';
-  document.getElementById('cta-success').classList.add('show');
-  console.log('CTA waitlist email:', email);
+  const btn = e.target.querySelector('button');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    await subscribeToKit(email);
+    document.getElementById('cta-form').style.display = 'none';
+    document.getElementById('cta-success').classList.add('show');
+  } catch (err) {
+    btn.textContent = 'Warteliste beitreten →';
+    btn.disabled = false;
+    alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+  }
 }
 
 // ─── SCROLL JOURNEY ───
